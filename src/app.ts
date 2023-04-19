@@ -1,11 +1,10 @@
-import 'dotenv/config'
-import CONFIG from './config/config'
+import 'express-async-errors'
 import express from 'express'
 import mongoose from 'mongoose'
-import router from './routes'
 import cors from 'cors'
-import authRoutes from './routes/Auth'
-import userRoutes from './routes/User'
+import CONFIG from './config'
+import router from './routes'
+import { BadRequest, errorHandling } from './middleware/errorHandlingMiddleware'
 
 // Create app
 const app = express()
@@ -17,7 +16,7 @@ mongoose.connect(CONFIG.mongo.url, CONFIG.mongo.settings)
     startServer()
     console.log('Connected to mongoDB')
   })
-  .catch((err: Error) => new Error(err.message))
+  .catch((err: Error) => new BadRequest(err.message))
 
 // Only start server if Mongo Connects
 function startServer () {
@@ -34,9 +33,10 @@ function startServer () {
   // Define routes
   app.use(express.urlencoded({ extended: true }))
   app.use(express.json())
-  app.use('/auth', authRoutes)
-  app.use('/user', userRoutes)
   app.use(router)
+
+  // Middleware to check errors
+  app.use(errorHandling)
 }
 
 export { app }
