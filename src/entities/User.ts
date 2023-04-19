@@ -1,10 +1,10 @@
 import mongoose, { type Document, Schema } from 'mongoose'
-import type RefreshTokenSchema from '../useCases/refreshToken/RefreshTokenSchema'
+import type RefreshTokenSchema from './RefreshToken'
 
 export type IUser = Record<'username' | 'email' | 'password', string> & {
+  _id: string
   createdAt?: Date
   refreshToken?: typeof RefreshTokenSchema
-  _id?: string
 }
 
 export type IUserModel = IUser & Document
@@ -15,6 +15,9 @@ export const UserSchema: Schema = new Schema({
   username: { type: String, required: true },
   createdAt: { type: Date, default: Date.now() },
   refreshToken: { type: Schema.Types.ObjectId, required: false, ref: 'refresh_token' }
+},
+{
+  versionKey: false
 })
 
 export default mongoose.model<IUserModel>('User', UserSchema)

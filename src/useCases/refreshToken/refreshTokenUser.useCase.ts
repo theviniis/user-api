@@ -1,4 +1,4 @@
-import db from './RefreshTokenSchema'
+import db from '../../entities/RefreshToken'
 import { generateTokenProvider, generateRefreshToken } from '../../provider'
 import { BadRequest } from '../../middleware/errorHandlingMiddleware'
 import dayjs from 'dayjs'

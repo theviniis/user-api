@@ -1,5 +1,5 @@
-import mongoose, { type Document, Schema } from 'mongoose'
-import User, { UserSchema } from '../../entities/UserSchema'
+import { Schema, type Document, model } from 'mongoose'
+import User, { UserSchema } from './User'
 
 export interface IRefreshToken {
   _id: string
@@ -16,4 +16,4 @@ export const RefreshTokenSchema = new Schema({
   user: { type: UserSchema, ref: User }
 })
 
-export default mongoose.model<IRefreshToken & Document>('refresh_token', RefreshTokenSchema)
+export default model<IRefreshToken & Document>('refresh_token', RefreshTokenSchema)

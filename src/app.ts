@@ -11,7 +11,7 @@ const app = express()
 app.use(cors())
 
 // Connect to mongo
-mongoose.connect(CONFIG.mongo.url, CONFIG.mongo.settings)
+mongoose.connect(CONFIG.mongo.url)
   .then(() => {
     startServer()
     console.log('Connected to mongoDB')
@@ -37,6 +37,16 @@ function startServer () {
 
   // Middleware to check errors
   app.use(errorHandling)
+
+  // Heath check
+  router.get('/hey', (req, res) => res.status(200).json({ message: 'ho!' }))
+
+  // Error Handling
+  router.use((req, res) => {
+    const error = new BadRequest('Route not found')
+    console.log(error.message)
+    return res.status(404).json({ message: error.message })
+  })
 }
 
 export { app }

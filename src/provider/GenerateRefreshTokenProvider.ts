@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import RefreshTokenModel from '../useCases/refreshToken/RefreshTokenSchema'
+import RefreshTokenModel from '../entities/RefreshToken'
 import { BadRequest } from '../middleware/errorHandlingMiddleware'
 
 class GenerateRefreshToken {

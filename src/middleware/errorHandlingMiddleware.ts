@@ -13,7 +13,7 @@ function errorHandling (err: BadRequest, req: Request, res: Response, next: Next
     .status(err.statusCode)
     .json({
       message: err.message,
-      success: false
+      status: false
     })
 }
 
