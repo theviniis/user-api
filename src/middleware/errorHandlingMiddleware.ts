@@ -1,4 +1,4 @@
-import { type Response, type Request } from 'express'
+import { type Response, type Request, type NextFunction } from 'express'
 
 class BadRequest extends Error {
   public statusCode: number
@@ -8,7 +8,7 @@ class BadRequest extends Error {
   }
 }
 
-function errorHandling (err: BadRequest, req: Request, res: Response) {
+function errorHandling (err: BadRequest, req: Request, res: Response, next: NextFunction) {
   res
     .status(err.statusCode)
     .json({
