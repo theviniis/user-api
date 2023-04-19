@@ -1,4 +1,4 @@
-import mongoose, { type Document, Schema } from 'mongoose'
+import { model, type Document, Schema } from 'mongoose'
 import type RefreshTokenSchema from './RefreshToken'
 
 export type IUser = Record<'username' | 'email' | 'password', string> & {
@@ -14,10 +14,9 @@ export const UserSchema: Schema = new Schema({
   password: { type: String, required: true },
   username: { type: String, required: true },
   createdAt: { type: Date, default: Date.now() },
-  refreshToken: { type: Schema.Types.ObjectId, required: false, ref: 'refresh_token' }
-},
-{
-  versionKey: false
-})
+  refreshToken: { type: Schema.Types.ObjectId, ref: 'refresh_token' }
+}, { versionKey: false })
 
-export default mongoose.model<IUserModel>('User', UserSchema)
+const User = model<IUserModel>('User', UserSchema)
+
+export default User

@@ -1,39 +1,67 @@
-import db from '../../entities/RefreshToken'
-import { generateTokenProvider, generateRefreshToken } from '../../provider'
-import { BadRequest } from '../../middleware/errorHandlingMiddleware'
+import RefreshToken from '../../entities/RefreshToken'
 import dayjs from 'dayjs'
+import { userUserCase } from '../createUser/User.useCase'
+import { generateTokenProvider } from '../../provider'
 
-class RefreshTokenUserUseCase {
-  isRefreshTokenExpired (expireDate: number): boolean {
-    return dayjs().isAfter(dayjs.unix(expireDate))
-  }
+const refreshTokenUserUseCase = {
+  getById: async function (tokenId: string) {
+    return await RefreshToken.findById(tokenId)
+      .catch((err: Error) => {
+        throw new Error(err.message)
+      })
+  },
 
-  async createNewRefreshToken (userId: string) {
-    await this.removeAllRefreshTokenFromDB(userId)
-    return await generateRefreshToken.execute(userId)
-  }
+  getByUserId: async function (userId: string) {
+    return await RefreshToken.findOne({ userId })
+      .catch((err: Error) => {
+        throw new Error(err.message)
+      })
+  },
 
-  async removeAllRefreshTokenFromDB (userId: string) {
-    return await db.deleteMany({ userId })
-  }
+  async validate (tokenId: string) {
+    const refreshToken = await this.getById(tokenId)
+    if (!refreshToken) throw new Error('Token not found')
+    const user = await userUserCase.getByTokenId(tokenId)
+    if (!user) throw new Error('User not found')
+    const token = generateTokenProvider.execute(user.email)
+    return { token }
+  },
 
-  async execute (refreshToken: string) {
-    try {
-      const DB_TOKEN = await db.findById(refreshToken)
-      if (!DB_TOKEN) { throw new BadRequest('Token not found') }
-      const token = generateTokenProvider.execute(String(DB_TOKEN._id))
-      const isRefreshTokenExpired = this.isRefreshTokenExpired(DB_TOKEN.expiresIn)
-      if (isRefreshTokenExpired) {
-        const newRefreshToken = await this.createNewRefreshToken(DB_TOKEN.userId)
-        return { token, refreshToken: newRefreshToken }
-      }
-      return { token }
-    } catch {
-      throw new BadRequest('Refresh token not found', 404)
+  removeAllRefreshTokens: async function (userId: string) {
+    return await RefreshToken.deleteMany({ userId })
+      .catch((err: Error) => {
+        throw new Error(err.message)
+      })
+  },
+
+  isExpired: function (date: number): boolean {
+    return dayjs().isAfter(dayjs.unix(date))
+  },
+
+  createRefreshToken: async function (userId: string, expiresInDays = 15) {
+    const user = await userUserCase.getById(userId)
+    if (!user) throw new Error('User not found')
+    const expiresIn = dayjs().add(expiresInDays, 'days').unix()
+    return await new RefreshToken({
+      userId,
+      expiresIn
+    })
+      .save()
+      .catch((err: Error) => {
+        throw new Error(err.message)
+      })
+  },
+
+  execute: async function (userId: string) {
+    const refreshToken = await this.getByUserId(userId)
+    if (refreshToken) {
+      const isExpired = this.isExpired(refreshToken.expiresIn)
+      if (!isExpired) return refreshToken
+      await this.removeAllRefreshTokens(userId)
     }
+    return await this.createRefreshToken(userId)
   }
-}
 
-const refreshTokenUserUseCase = new RefreshTokenUserUseCase()
+} as const
 
-export { RefreshTokenUserUseCase, refreshTokenUserUseCase }
+export { refreshTokenUserUseCase }

@@ -1,16 +1,18 @@
 import { hash } from 'bcryptjs'
 import User from '../../entities/User'
 import { BadRequest } from '../../middleware/errorHandlingMiddleware'
-class UserUseCase {
-  async getAll () {
+import { refreshTokenUserUseCase } from '../refreshToken/refreshTokenUser.useCase'
+
+const userUserCase = {
+  getAll: async function () {
     try {
       return await User.find()
     } catch {
       throw new BadRequest('Error while getting data')
     }
-  }
+  },
 
-  async getById (userId: string) {
+  getById: async function (userId: string) {
     try {
       const user = await User.findById(userId)
       if (!user) {
@@ -20,9 +22,9 @@ class UserUseCase {
     } catch {
       throw new BadRequest('Error while reading data', 404)
     }
-  }
+  },
 
-  async getByEmail (email: string) {
+  getByEmail: async function (email: string) {
     try {
       const user = await User.findOne({ email })
       if (!user) {
@@ -32,9 +34,16 @@ class UserUseCase {
     } catch {
       throw new BadRequest('User email not found', 404)
     }
-  }
+  },
 
-  async deleteById (userId: string) {
+  async getByTokenId (tokenId: string) {
+    return await refreshTokenUserUseCase.getById(tokenId)
+      .then(async (token) => token && await userUserCase
+        .getById(token.userId))
+      .catch((err: Error) => { throw new Error(err.message) })
+  },
+
+  deleteById: async function (userId: string) {
     try {
       const user = await User.findByIdAndDelete(userId)
       if (!user) {
@@ -44,18 +53,18 @@ class UserUseCase {
     } catch {
       throw new BadRequest('User id not found', 404)
     }
-  }
+  },
 
-  async update (userId: string, body: Record<'username' | 'password' | 'email', string>) {
+  update: async function (userId: string, body: Record<'username' | 'password' | 'email', string>) {
     try {
       await User.findByIdAndUpdate(userId, body)
       return await this.getById(userId)
     } catch {
       throw new BadRequest('User id not found', 404)
     }
-  }
+  },
 
-  async create ({ username, email, password }: Record<'username' | 'email' | 'password', string>) {
+  create: async function ({ username, email, password }: Record<'username' | 'email' | 'password', string>) {
     const userAlreadyExists = await User.findOne({ email })
     if (userAlreadyExists) {
       throw new BadRequest('Email already in use', 409)
@@ -69,6 +78,4 @@ class UserUseCase {
   }
 }
 
-const userUserCase = new UserUseCase()
-
-export { UserUseCase, userUserCase }
+export { userUserCase }

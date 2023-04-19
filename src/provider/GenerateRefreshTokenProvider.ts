@@ -2,16 +2,14 @@ import dayjs from 'dayjs'
 import RefreshTokenModel from '../entities/RefreshToken'
 import { BadRequest } from '../middleware/errorHandlingMiddleware'
 
-class GenerateRefreshToken {
-  async execute (userId: string) {
-    const expiresIn = dayjs().add(15, 'days').unix()
-    const refreshToken = await new RefreshTokenModel({ userId, expiresIn })
-      .save()
-      .catch((err: Error) => { throw new BadRequest(err.message, 409) })
-    return refreshToken
+async function generateRefreshToken (userId: string) {
+  const expiresIn = dayjs().add(15, 'days').unix()
+  try {
+    const token = await new RefreshTokenModel({ userId, expiresIn }).save()
+    return token
+  } catch {
+    throw new BadRequest('Cannot create token', 409)
   }
 }
 
-const generateRefreshToken = new GenerateRefreshToken()
-
-export { GenerateRefreshToken, generateRefreshToken }
+export { generateRefreshToken }

@@ -1,5 +1,5 @@
 import { Schema, type Document, model } from 'mongoose'
-import User, { UserSchema } from './User'
+import type User from './User'
 
 export interface IRefreshToken {
   _id: string
@@ -8,12 +8,13 @@ export interface IRefreshToken {
   user: typeof User
 }
 
+export type IRefreshTokenModel = IRefreshToken & Document
+
 export const RefreshTokenSchema = new Schema({
   userId: String,
   expiresIn: Number,
-  expireAfterSeconds: Number,
-  expireAt: Number,
-  user: { type: UserSchema, ref: User }
-})
+  user: { type: Schema.Types.ObjectId, ref: 'User' }
+}, { versionKey: false })
 
-export default model<IRefreshToken & Document>('refresh_token', RefreshTokenSchema)
+const RefreshToken = model<IRefreshTokenModel>('refresh_token', RefreshTokenSchema)
+export default RefreshToken
