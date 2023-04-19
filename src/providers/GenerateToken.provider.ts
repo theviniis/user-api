@@ -1,7 +1,7 @@
 import { sign } from 'jsonwebtoken'
 import CONFIG from '../config'
 
-class GenerateTokenProvider {
+export class GenerateTokenProvider {
   execute (userEmail: string, expiresIn = '15m') {
     const token = sign(
       {},
@@ -12,6 +12,4 @@ class GenerateTokenProvider {
   }
 }
 
-const generateTokenProvider = new GenerateTokenProvider()
-
-export { GenerateTokenProvider, generateTokenProvider }
+export const generateTokenProvider = new GenerateTokenProvider()

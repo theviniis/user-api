@@ -9,6 +9,7 @@ const data = [
   { id: '1', name: 'balão' },
   { id: '2', name: 'bola' }
 ]
+
 router.get('/', ensureAuthenticated, (req, res) => res.json(data))
 router.use('/auth', authRoutes)
 router.use('/user', userRoutes)

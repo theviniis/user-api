@@ -1,9 +1,9 @@
 import { hash } from 'bcryptjs'
-import User from '../../entities/User'
-import { BadRequest } from '../../middleware/errorHandlingMiddleware'
-import { refreshTokenUserUseCase } from '../refreshToken/refreshTokenUser.useCase'
+import { User } from '../entities'
+import { BadRequest } from '../middleware'
+import { refreshTokenUserUseCase } from './'
 
-const userUserCase = {
+export const userUserCase = {
   getAll: async function () {
     try {
       return await User.find()
@@ -77,5 +77,3 @@ const userUserCase = {
     return user
   }
 }
-
-export { userUserCase }

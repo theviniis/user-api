@@ -1,5 +1,5 @@
 import { type Request, type Response, type NextFunction } from 'express'
-import { BadRequest } from './errorHandlingMiddleware'
+import { BadRequest } from './errorHandling.middleware'
 import { verify } from 'jsonwebtoken'
 import CONFIG from '../config'
 

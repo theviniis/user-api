@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { Router } from 'express'
-import { authUserUseController } from '../useCases/authUser/authUser.controller'
-import { refreshTokenUserController } from '../useCases/refreshToken/refreshTokenUser.controller'
+import { authUserUseController } from '../controllers/authUser.controller'
+import { refreshTokenUserController } from '../controllers/refreshToken.controller'
 
 const router = Router()
 

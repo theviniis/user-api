@@ -1,6 +1,6 @@
 import { type Response, type Request, type NextFunction } from 'express'
 
-class BadRequest extends Error {
+export class BadRequest extends Error {
   public statusCode: number
   constructor (message: string, statusCode = 400) {
     super(message)
@@ -8,7 +8,7 @@ class BadRequest extends Error {
   }
 }
 
-function errorHandling (err: BadRequest, req: Request, res: Response, next: NextFunction) {
+export function errorHandling (err: BadRequest, req: Request, res: Response, next: NextFunction) {
   res
     .status(err.statusCode)
     .json({
@@ -16,5 +16,3 @@ function errorHandling (err: BadRequest, req: Request, res: Response, next: Next
       status: false
     })
 }
-
-export { errorHandling, BadRequest }

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { Router } from 'express'
-import { userController } from '../useCases/createUser/User.controller'
-import { ensureAuthenticated } from '../middleware/ensureAuthenticatedMiddleware'
+import { userController } from '../controllers/user.controller'
+import { ensureAuthenticated } from '../middleware/ensureAuthenticated.middleware'
 
 const router = Router()
 

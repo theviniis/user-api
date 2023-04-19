@@ -1,5 +1,5 @@
 import { type Request, type Response } from 'express'
-import { refreshTokenUserUseCase } from './refreshTokenUser.useCase'
+import { refreshTokenUserUseCase } from '../useCases/refreshTokenUser.useCase'
 
 async function refreshTokenUserController (req: Request<unknown, unknown, { refreshToken: string }>, res: Response) {
   const { refreshToken } = req.body

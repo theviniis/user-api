@@ -4,7 +4,7 @@ import mongoose from 'mongoose'
 import cors from 'cors'
 import CONFIG from './config'
 import router from './routes'
-import { BadRequest, errorHandling } from './middleware/errorHandlingMiddleware'
+import { BadRequest, errorHandling } from './middleware/errorHandling.middleware'
 
 // Create app
 const app = express()

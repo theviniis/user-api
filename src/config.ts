@@ -13,8 +13,8 @@ const CONFIG = {
   mongo: {
     url: MONGO_URI,
     settings: {
-      // retryWrites: true,
-      // w: 'majority'
+      retryWrites: true,
+      w: 'majority'
     }
   },
   server: {

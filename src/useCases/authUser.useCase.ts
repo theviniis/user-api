@@ -1,9 +1,8 @@
 import { compare } from 'bcryptjs'
-import { BadRequest } from '../../middleware/errorHandlingMiddleware'
-import { generateTokenProvider } from '../../provider/GenerateTokenProvider'
-import { refreshTokenUserUseCase } from '../refreshToken/refreshTokenUser.useCase'
-import { userUserCase } from '../createUser/User.useCase'
-import db from '../../entities/User'
+import { BadRequest } from '../middleware'
+import { generateTokenProvider } from '../providers'
+import { User } from '../entities'
+import { userUserCase, refreshTokenUserUseCase } from './'
 
 type IRequest = Record<'email' | 'password', string>
 
@@ -11,7 +10,7 @@ type ISignUp = Record<'username' | 'email' | 'password', string>
 
 const authUserUseCase = {
   signup: async function ({ username, password, email }: ISignUp) {
-    const user = await db.findOne({ email })
+    const user = await User.findOne({ email })
     if (user) {
       throw new BadRequest('User email already exists')
     }

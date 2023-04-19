@@ -1,7 +1,7 @@
-import RefreshToken from '../../entities/RefreshToken'
+import { RefreshToken } from '../entities'
 import dayjs from 'dayjs'
-import { userUserCase } from '../createUser/User.useCase'
-import { generateTokenProvider } from '../../provider'
+import { generateTokenProvider } from '../providers'
+import { userUserCase } from './'
 
 const refreshTokenUserUseCase = {
   getById: async function (tokenId: string) {
