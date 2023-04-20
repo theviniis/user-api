@@ -1,7 +1,7 @@
 import { RefreshToken } from '../entities'
 import dayjs from 'dayjs'
-import { generateTokenProvider } from '../providers'
 import { userUserCase } from './'
+import { tokenUseCase } from './token.useCase'
 
 const refreshTokenUserUseCase = {
   getById: async function (tokenId: string) {
@@ -18,13 +18,31 @@ const refreshTokenUserUseCase = {
       })
   },
 
-  async validate (tokenId: string) {
+  async validate (tokenId: string): Promise<{ token?: string, message: string, status: boolean }> {
     const refreshToken = await this.getById(tokenId)
-    if (!refreshToken) throw new Error('Token not found')
+
+    const invalidObject = {
+      message: 'Refresh token invalid',
+      status: false
+    }
+
+    if (!refreshToken) {
+      return invalidObject
+    }
+
     const user = await userUserCase.getByTokenId(tokenId)
-    if (!user) throw new Error('User not found')
-    const token = generateTokenProvider.execute(user.email)
-    return { token }
+    if (!user) {
+      return invalidObject
+    }
+
+    const isTokenExpired = this.isExpired(refreshToken.expiresIn)
+    if (isTokenExpired) {
+      return invalidObject
+    }
+
+    const token = tokenUseCase.create(user.email, '15d')
+
+    return { token, message: 'Refresh token valid', status: true }
   },
 
   removeAllRefreshTokens: async function (userId: string) {
@@ -56,7 +74,7 @@ const refreshTokenUserUseCase = {
     const refreshToken = await this.getByUserId(userId)
     if (refreshToken) {
       const isExpired = this.isExpired(refreshToken.expiresIn)
-      if (!isExpired) return refreshToken
+      if (!isExpired) { return refreshToken }
       await this.removeAllRefreshTokens(userId)
     }
     return await this.createRefreshToken(userId)
